@@ -34,7 +34,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/raw")
     public Order createOrder(@RequestBody Order order) {
         return orderRepository.save(order);
     }
