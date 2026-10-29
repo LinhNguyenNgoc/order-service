@@ -1,0 +1,57 @@
+### 1. CREATE - Tạo đơn hàng 1
+POST http://localhost:8082/api/orders
+Content-Type: application/json
+
+{
+  "orderNumber": "ORD-001",
+  "totalPrice": 999.00,
+  "status": "PENDING"
+}
+
+### 2. CREATE - Tạo đơn hàng 2
+POST http://localhost:8082/api/orders
+Content-Type: application/json
+
+{
+  "orderNumber": "ORD-002",
+  "totalPrice": 1999.00,
+  "status": "CONFIRMED"
+}
+
+### 3. CREATE - Tạo đơn hàng 3
+POST http://localhost:8082/api/orders
+Content-Type: application/json
+
+{
+  "orderNumber": "ORD-003",
+  "totalPrice": 249.00,
+  "status": "SHIPPED"
+}
+
+
+### 4. READ - Lấy danh sách tất cả đơn hàng
+GET http://localhost:8082/api/orders
+
+
+### 5. READ - Lấy chi tiết đơn hàng theo ID (giả sử ID = 1)
+GET http://localhost:8082/api/orders/1
+
+
+### 6. UPDATE - Cập nhật đơn hàng có ID = 1
+PUT http://localhost:8082/api/orders/1
+Content-Type: application/json
+
+{
+  "orderNumber": "ORD-001-UPDATED",
+  "totalPrice": 1199.00,
+  "status": "COMPLETED"
+}
+
+
+### 7. DELETE - Xóa đơn hàng có ID = 3
+DELETE http://localhost:8082/api/orders/3
+
+
+
+docker build -t your-dockerhub-username/order-service:latest .
+docker push your-dockerhub-username/order-service:latest

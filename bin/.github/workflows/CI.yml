@@ -1,0 +1,38 @@
+name: CI - Build and Push Docker Image
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: order-service
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Repository Dispatch to GitOps Repo
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.STUDY }}
+          repository: ${{ github.actor }}/gitops-manifests
+          event-type: update-order-service-image
+          client-payload: '{"image_tag": "${{ github.run_number }}", "service_name": "${{ env.IMAGE_NAME }}"}'
