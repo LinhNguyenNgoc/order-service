@@ -18,17 +18,25 @@ public class OrderService {
     }
 
     public Order createOrder(OrderRequest request) {
-        // 1. Lưu DB với trạng thái PENDING
+        // 1. Lưu DB với trạng thái PENDING và đầy đủ thông tin sản phẩm
         Order order = new Order();
         order.setOrderNumber(request.getOrderNumber());
         order.setTotalPrice(request.getTotalPrice());
+        order.setSkuCode(request.getSkuCode());         // Gán skuCode
+        order.setQuantity(request.getQuantity());       // Gán quantity
         order.setStatus("PENDING");
         
         Order savedOrder = orderRepository.save(order);
 
-        // 2. Bắn sự kiện lên Kafka topic "order-events" chuẩn JSON đơn giản
-        String eventMessage = String.format("{\"orderId\": %d, \"orderNumber\": \"%s\", \"totalPrice\": %.2f}", 
-                savedOrder.getId(), savedOrder.getOrderNumber(), savedOrder.getTotalPrice());
+        // 2. Bắn sự kiện lên Kafka topic "order-events" kèm theo skuCode và quantity chuẩn JSON
+        String eventMessage = String.format(
+            "{\"orderId\": %d, \"orderNumber\": \"%s\", \"skuCode\": \"%s\", \"quantity\": %d, \"totalPrice\": %.2f}", 
+            savedOrder.getId(), 
+            savedOrder.getOrderNumber(), 
+            savedOrder.getSkuCode(), 
+            savedOrder.getQuantity(), 
+            savedOrder.getTotalPrice()
+        );
         
         kafkaTemplate.send("order-events", eventMessage);
 
